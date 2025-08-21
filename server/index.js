@@ -10,11 +10,26 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 8080;
 
+// --- CORS Configuration ---
+const corsOptions = {
+  origin: [
+    'https://vizuara-task-seven.vercel.app', // Your Vercel deployment
+    'http://localhost:3000', // Local development
+    'http://localhost:5173' // Common Vite dev server port
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+};
+
 // --- Middleware ---
-app.use(cors()); // Enable Cross-Origin Resource Sharing
+app.use(cors(corsOptions)); // Enable Cross-Origin Resource Sharing with specific options
 app.use(express.json()); // Parse JSON request bodies
 
-// --- MongoDB Connection ---
+// Optional: Handle preflight requests explicitly
+app.options('*', cors(corsOptions));
+
+// --- MongoDB Connection (commented out) ---
 // const uri = process.env.MONGODB_URI;
 // if (!uri) {
 //   console.error("FATAL ERROR: MONGODB_URI is not defined in your .env file.");
@@ -52,7 +67,7 @@ app.use(express.json()); // Parse JSON request bodies
  * @desc    Analyzes a single piece of text using the Hugging Face API.
  * This is used for real-time, single-sentence feedback.
  */
-app.post('/api/hf-sentiment', async (req, res) => {
+app.post('/api/hf-sentiment', cors(corsOptions), async (req, res) => {
   try {
     const { text } = req.body;
     if (!text) {
@@ -73,26 +88,33 @@ app.post('/api/hf-sentiment', async (req, res) => {
  * @desc    Saves a complete multi-mode analysis result to the database.
  * This is called when the user clicks "Save to History".
  */
-app.post('/api/analysis', async (req, res) => {
-    if (!db) {
-        return res.status(503).json({ error: 'Database not available' });
-    }
+app.post('/api/analysis', cors(corsOptions), async (req, res) => {
+    // if (!db) {
+    //     return res.status(503).json({ error: 'Database not available' });
+    // }
     try {
         const { text, results } = req.body;
         if (!text || !results) {
             return res.status(400).json({ error: 'Text and results are required' });
         }
 
+        // Mock database response since MongoDB is commented out
         const analysisRecord = {
             text,
             ruleResult: results.rule,
             nbResult: results.nb,
             hfResult: results.hf,
-            timestamp: new Date()
+            timestamp: new Date(),
+            id: Date.now() // Mock ID
         };
 
-        const saved = await db.collection('analyses').insertOne(analysisRecord);
-        res.status(201).json(saved);
+        // Mock save operation
+        // const saved = await db.collection('analyses').insertOne(analysisRecord);
+        res.status(201).json({ 
+          insertedId: analysisRecord.id, 
+          analysis: analysisRecord,
+          message: "Mock save successful (MongoDB disabled)" 
+        });
 
     } catch(error) {
         console.error('Database save error:', error);
@@ -100,23 +122,42 @@ app.post('/api/analysis', async (req, res) => {
     }
 });
 
-
 /**
  * @route   GET /api/history
  * @desc    Retrieves the last 50 analysis records from the database.
  */
-app.get('/api/history', async (req, res) => {
-  if (!db) {
-    return res.status(503).json({ error: 'Database not available' });
-  }
+app.get('/api/history', cors(corsOptions), async (req, res) => {
+  // if (!db) {
+  //   return res.status(503).json({ error: 'Database not available' });
+  // }
   try {
-    const history = await db.collection('analyses')
-      .find()
-      .sort({ timestamp: -1 }) // Get the most recent entries first
-      .limit(50)
-      .toArray();
+    // Mock history data since MongoDB is commented out
+    const mockHistory = [
+      {
+        id: 1,
+        text: "Sample analysis 1",
+        ruleResult: { label: "positive", score: 0.8 },
+        nbResult: { label: "positive", score: 0.75 },
+        hfResult: { label: "positive", score: 0.85 },
+        timestamp: new Date(Date.now() - 86400000) // 1 day ago
+      },
+      {
+        id: 2,
+        text: "Sample analysis 2",
+        ruleResult: { label: "negative", score: 0.7 },
+        nbResult: { label: "negative", score: 0.65 },
+        hfResult: { label: "negative", score: 0.75 },
+        timestamp: new Date(Date.now() - 172800000) // 2 days ago
+      }
+    ];
 
-    res.json(history);
+    // const history = await db.collection('analyses')
+    //   .find()
+    //   .sort({ timestamp: -1 }) // Get the most recent entries first
+    //   .limit(50)
+    //   .toArray();
+
+    res.json(mockHistory);
   } catch (error) {
     console.error('Database history fetch error:', error);
     res.status(500).json({ error: 'Failed to fetch history' });
@@ -127,19 +168,22 @@ app.get('/api/history', async (req, res) => {
  * @route   GET /health
  * @desc    A simple health check endpoint to verify the server is running.
  */
-app.get('/health', (req, res) => {
+app.get('/health', cors(corsOptions), (req, res) => {
   res.json({
     status: 'OK',
     timestamp: new Date().toISOString(),
-    db_connected: !!db, // Returns true if db object exists
+    db_connected: false, // Set to false since MongoDB is commented out
+    cors_enabled: true,
+    allowed_origins: corsOptions.origin
   });
 });
 
-app.get("/",(req,res)=>{
+app.get("/", cors(corsOptions), (req, res) => {
   res.send("It's Working");
-})
+});
 
 // --- Start Server ---
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`CORS enabled for: ${corsOptions.origin.join(', ')}`);
 });
