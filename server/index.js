@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 8080;
 // --- CORS Configuration ---
 const corsOptions = {
   origin: [
-    'https://vizuara-task-seven.vercel.app', // Your Vercel deployment
+    'https://sentimentlab.vercel.app', // Your Vercel deployment
     'http://localhost:3000', // Local development
     'http://localhost:5173' // Common Vite dev server port
   ],
