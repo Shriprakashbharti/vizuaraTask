@@ -135,6 +135,10 @@ app.get('/health', (req, res) => {
   });
 });
 
+app.get("/",(req,res)=>{
+  res.send("It's Working");
+})
+
 // --- Start Server ---
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
