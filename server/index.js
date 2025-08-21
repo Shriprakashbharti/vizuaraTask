@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import { MongoClient, ServerApiVersion } from 'mongodb';
+// import { MongoClient, ServerApiVersion } from 'mongodb';
 import { hfSentiment } from './hfClient.js'; // Ensure hfClient.js is present and uses ES modules
 
 // Load environment variables from .env file
@@ -15,35 +15,35 @@ app.use(cors()); // Enable Cross-Origin Resource Sharing
 app.use(express.json()); // Parse JSON request bodies
 
 // --- MongoDB Connection ---
-const uri = process.env.MONGODB_URI;
-if (!uri) {
-  console.error("FATAL ERROR: MONGODB_URI is not defined in your .env file.");
-  process.exit(1); // Exit the application if the DB connection string is missing
-}
+// const uri = process.env.MONGODB_URI;
+// if (!uri) {
+//   console.error("FATAL ERROR: MONGODB_URI is not defined in your .env file.");
+//   process.exit(1); // Exit the application if the DB connection string is missing
+// }
 
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  }
-});
+// const client = new MongoClient(uri, {
+//   serverApi: {
+//     version: ServerApiVersion.v1,
+//     strict: true,
+//     deprecationErrors: true,
+//   }
+// });
 
-let db;
+// let db;
 
-async function connectDB() {
-  try {
-    await client.connect();
-    db = client.db('sentimentLab'); // Use the 'sentimentLab' database
-    console.log('Successfully connected to MongoDB.');
-  } catch (error) {
-    console.error('MongoDB connection failed:', error);
-    process.exit(1); // Exit the application on a failed connection
-  }
-}
+// async function connectDB() {
+//   try {
+//     await client.connect();
+//     db = client.db('sentimentLab'); // Use the 'sentimentLab' database
+//     console.log('Successfully connected to MongoDB.');
+//   } catch (error) {
+//     console.error('MongoDB connection failed:', error);
+//     process.exit(1); // Exit the application on a failed connection
+//   }
+// }
 
-// Connect to the database when the server starts
-connectDB();
+// // Connect to the database when the server starts
+// connectDB();
 
 // --- API Routes ---
 
