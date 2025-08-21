@@ -2,7 +2,7 @@
 // [updated file for real-time analysis]
 import { useEffect, useMemo, useState } from "react";
 import { classifyRule } from "../lib/lexicon";
-import { makeNB, tinyTrainData } from "../lib/naiveBayes";
+import { makeNB, largerTrainData } from "../lib/naiveBayes";
 import { hfSentiment } from "../lib/hfClient";
 import Badge from "./Badge";
 import { saveAnalysis } from "../lib/db";
@@ -16,7 +16,7 @@ export default function SentimentDemo({ compact = false }) {
   const [loading, setLoading] = useState(false);
 
   // Local Naive Bayes
-  const nb = useMemo(() => makeNB(tinyTrainData), []);
+  const nb = useMemo(() => makeNB(largerTrainData), []);
 
   // Analyze text with debouncing
   useEffect(() => {

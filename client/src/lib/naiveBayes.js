@@ -278,3 +278,5 @@ export function evaluateModel(testData, nbModel) {
     results
   };
 }
+
+export const makeNB = makeEnhancedNB;

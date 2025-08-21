@@ -2,7 +2,7 @@
 // [new file]
 import { useState } from 'react'
 import { classifyRule } from '../lib/lexicon'
-import { makeNB, tinyTrainData } from '../lib/naiveBayes'
+import { makeNB, largerTrainData } from '../lib/naiveBayes'
 import { hfSentiment } from '../lib/hfClient'
 import Badge from './Badge'
 import { saveAnalysis } from '../lib/db'
@@ -13,7 +13,7 @@ export default function BatchAnalysis() {
   const [loading, setLoading] = useState(false)
   const [method, setMethod] = useState('rule') // 'rule', 'nb', or 'hf'
 
-  const nb = makeNB(tinyTrainData)
+  const nb = makeNB(largerTrainData)
 
   const analyzeBatch = async () => {
     const sentences = text.split('\n').filter(s => s.trim())

@@ -2,7 +2,7 @@
 // [new file]
 import { useState, useMemo } from 'react'
 import { classifyRule } from '../lib/lexicon'
-import { makeNB, tinyTrainData } from '../lib/naiveBayes'
+import { makeNB, largerTrainData } from '../lib/naiveBayes'
 import { hfSentiment } from '../lib/hfClient'
 import Badge from './Badge'
 import { saveAnalysis } from '../lib/db'
@@ -17,7 +17,7 @@ export default function ComparisonView() {
   })
 
   // Local Naive Bayes
-  const nb = useMemo(() => makeNB(tinyTrainData), [])
+  const nb = useMemo(() => makeNB(largerTrainData), [])
 
   const analyzeAll = async (inputText) => {
     if (!inputText.trim()) return
